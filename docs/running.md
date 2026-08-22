@@ -148,8 +148,14 @@ snd-control predict-calibrated \
 snd-control predict \
   --model outputs/model-v4/model_bundle.joblib \
   --condition configs/prediction_condition.example.json \
-  --tn-standard 15
+  --tn-standard 15 \
+  --minimum-safe-aeration 3.8
 ```
+
+`--minimum-safe-aeration` 是生化池混合曝气的硬下限。上面的 `3.8 L/min` 只是
+命令格式示例，必须替换为经现场确认的数值。有效下限取配置值与训练数据历史下限
+中的较大者；若配置值高于历史曝气上限，程序会拒绝给出模型建议并要求补充数据。
+该值不包含 MBR 膜擦洗空气需求，二者需分别核算和联锁。
 
 建议先在历史回放或受控小试中验证，再用于任何现场操作。B 级建议执行后至少稳定一个 HRT，并复测 TN、NH₄⁺-N、NO₃⁻-N、NO₂⁻-N 和 DO。
 
@@ -157,6 +163,8 @@ snd-control predict \
 
 ```bash
 python -m unittest discover -s tests -v
+coverage run --source=src/wastewater_snd -m unittest discover -s tests -v
+coverage report --fail-under=60
 ```
 
 端到端演示：

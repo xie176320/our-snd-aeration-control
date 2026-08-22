@@ -115,7 +115,12 @@ def command_demo_data(args: argparse.Namespace) -> int:
     return 0
 
 
-def _train(data_path: Path, output_dir: Path, interactive: bool) -> int:
+def _train(
+    data_path: Path,
+    output_dir: Path,
+    interactive: bool,
+    minimum_safe_aeration: float | None = None,
+) -> int:
     frame = read_model_csv(data_path)
     validation, issues = validate_model_frame(frame)
     if not validation["train_ready"]:
@@ -190,6 +195,7 @@ def _train(data_path: Path, output_dir: Path, interactive: bool) -> int:
             trial_step_abs=model_v4.TRIAL_STEP_ABS_DEFAULT,
             trial_step_fraction=model_v4.TRIAL_STEP_FRACTION_DEFAULT,
             safety_margin=model_v4.TN_SAFETY_MARGIN_DEFAULT,
+            minimum_safe_aeration=minimum_safe_aeration,
         )
     return 0
 
@@ -199,7 +205,12 @@ def command_train(args: argparse.Namespace) -> int:
     output_dir = _path(args.output_dir)
     if not data_path.exists():
         raise FileNotFoundError(f"未找到训练 CSV：{data_path}")
-    return _train(data_path, output_dir, args.interactive)
+    return _train(
+        data_path,
+        output_dir,
+        args.interactive,
+        minimum_safe_aeration=args.minimum_safe_aeration,
+    )
 
 
 def command_ablate_our(args: argparse.Namespace) -> int:
@@ -490,6 +501,7 @@ def command_predict(args: argparse.Namespace) -> int:
             trial_step_abs=args.trial_step_abs,
             trial_step_fraction=args.trial_step_fraction,
             safety_margin=args.tn_safety_margin,
+            minimum_safe_aeration=args.minimum_safe_aeration,
         )
     )
     return 0
@@ -536,6 +548,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="训练完成后进入逐项输入新工况的交互界面",
     )
+    train_parser.add_argument(
+        "--minimum-safe-aeration",
+        type=float,
+        default=None,
+        help="交互建议采用的生化池混合曝气硬下限",
+    )
     train_parser.set_defaults(handler=command_train)
 
     ablation_parser = subparsers.add_parser(
@@ -577,6 +595,12 @@ def build_parser() -> argparse.ArgumentParser:
     predict_parser.add_argument("--trial-step-abs", type=float, default=0.5)
     predict_parser.add_argument("--trial-step-fraction", type=float, default=0.05)
     predict_parser.add_argument("--tn-safety-margin", type=float, default=1.0)
+    predict_parser.add_argument(
+        "--minimum-safe-aeration",
+        type=float,
+        default=None,
+        help="生化池混合曝气硬下限；省略时使用训练数据历史下限",
+    )
     predict_parser.set_defaults(handler=command_predict)
 
     calibrated_predict_parser = subparsers.add_parser(

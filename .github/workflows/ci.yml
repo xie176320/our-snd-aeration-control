@@ -36,8 +36,11 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q src tests streamlit_app.py
 
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+      - name: Run tests with coverage gate
+        run: |
+          coverage run --source=src/wastewater_snd -m unittest discover -s tests -v
+          coverage report --show-missing --fail-under=60
+          coverage xml
 
       - name: Run synthetic end-to-end demo
         if: matrix.python-version == '3.12'

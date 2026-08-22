@@ -11,7 +11,7 @@ from wastewater_snd.calibrated import (
     select_calibration_indices,
 )
 from wastewater_snd.model_v4 import ShuffledGroupKFoldCompat
-from wastewater_snd.sources import canonical_date, validate_model_frame
+from wastewater_snd.sources import canonical_date, model_row_audit, validate_model_frame
 from wastewater_snd.synthetic import demo_frame
 
 
@@ -43,6 +43,31 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(summary["valid_rows"], 59)
         self.assertEqual(summary["excluded_rows"], 1)
         self.assertTrue(any(issue.severity == "warning" for issue in issues))
+
+    def test_missing_schema_and_invalid_rows_are_reported_explicitly(self) -> None:
+        summary, issues = validate_model_frame(pd.DataFrame({"unknown": [1]}))
+        self.assertFalse(summary["train_ready"])
+        self.assertEqual(issues[0].code, "MISSING_REQUIRED_COLUMNS")
+
+        frame = demo_frame().iloc[:10].copy()
+        frame.loc[0, "异养菌最大OUR"] = -1
+        frame.loc[0, "AOB最大OUR"] = -1
+        frame.loc[0, "NOB最大OUR"] = -1
+        frame.loc[0, "异养菌实时OUR"] = -1
+        frame.loc[0, "进水TN(mg/L)"] = 0
+        frame.loc[0, "进水COD(mg/L)"] = -1
+        frame.loc[0, "曝气量(L/min)"] = 0
+        frame.loc[0, "TN去除率"] = 1.2
+        frame.loc[0, "SND率"] = -0.1
+        _, audit = model_row_audit(frame)
+        self.assertEqual(audit.loc[0, "训练状态"], "排除")
+        self.assertIn("越界", audit.loc[0, "排除原因"])
+
+        summary, issues = validate_model_frame(frame)
+        self.assertFalse(summary["train_ready"])
+        self.assertEqual(summary["valid_rows"], 9)
+        self.assertTrue(any(issue.code == "TOO_FEW_VALID_ROWS" for issue in issues))
+        self.assertTrue(any(issue.code == "TOO_FEW_DATE_GROUPS" for issue in issues))
 
     def test_compat_group_split_never_leaks_a_date(self) -> None:
         groups = np.repeat(["d1", "d2", "d3", "d4", "d5", "d6"], 3)

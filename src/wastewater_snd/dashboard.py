@@ -61,7 +61,7 @@ def _recommended_aeration(recommendation: str) -> float | None:
 
 def _condition_inputs(
     st, runtime: DemoRuntime, model_source: str
-) -> tuple[dict[str, float], float]:
+) -> tuple[dict[str, float], float, float]:
     median = runtime.data[model_v4.RAW_MODEL_INPUTS].median(numeric_only=True)
     st.sidebar.markdown("### 新工况输入")
     st.sidebar.caption(f"默认值来自{model_source}的中位数，可直接修改。")
@@ -97,7 +97,22 @@ def _condition_inputs(
             step=0.5,
         )
     )
-    return values, tn_standard
+    historical_low = float(runtime.data[model_v4.AERATION_COL].min())
+    historical_high = float(runtime.data[model_v4.AERATION_COL].max())
+    minimum_safe_aeration = float(
+        st.sidebar.number_input(
+            "生化池混合安全下限（L/min）",
+            min_value=0.1,
+            max_value=historical_high,
+            value=historical_low,
+            step=0.1,
+            help=(
+                "现场应依据池型、搅拌与污泥沉降风险确认。该值仅约束生化池混合曝气，"
+                "MBR 膜擦洗风量需单独核算。"
+            ),
+        )
+    )
+    return values, tn_standard, minimum_safe_aeration
 
 
 def _render_control_tab(
@@ -105,6 +120,7 @@ def _render_control_tab(
     runtime: DemoRuntime,
     values: dict[str, float],
     tn_standard: float,
+    minimum_safe_aeration: float,
     *,
     is_synthetic: bool,
 ):
@@ -121,8 +137,17 @@ def _render_control_tab(
         )
     try:
         condition = make_condition(values)
-        prediction, recommendation = predict_condition(runtime, condition, tn_standard=tn_standard)
-        curve = aeration_response_curve(runtime, condition)
+        prediction, recommendation = predict_condition(
+            runtime,
+            condition,
+            tn_standard=tn_standard,
+            minimum_safe_aeration=minimum_safe_aeration,
+        )
+        curve = aeration_response_curve(
+            runtime,
+            condition,
+            minimum_safe_aeration=minimum_safe_aeration,
+        )
     except ValueError as exc:
         st.error(str(exc))
         return
@@ -151,7 +176,10 @@ def _render_control_tab(
         ].copy()
         tn_curve["TN限值(mg/L)"] = tn_standard
         st.line_chart(tn_curve)
-        st.caption("曲线仅覆盖训练数据中的曝气范围；保守上界包含跨日期 90% 误差裕量。")
+        st.caption(
+            "曲线从配置的生化池混合安全下限开始，且不超出训练数据曝气范围；"
+            "保守上界包含跨日期 90% 误差裕量。"
+        )
 
     st.markdown("#### TN 去除率与 SND 响应")
     ratio_curve = curve.set_index(model_v4.AERATION_COL)[["预测TN去除率", "预测SND率"]]
@@ -368,7 +396,11 @@ def main() -> None:
         st.info("当前为公开在线演示：文件上传已关闭，全部结果来自运行时生成的合成数据。")
         st.sidebar.success("公开合成演示 · 线上文件上传已关闭")
 
-    values, tn_standard = _condition_inputs(st, runtime, model_source)
+    values, tn_standard, minimum_safe_aeration = _condition_inputs(
+        st,
+        runtime,
+        model_source,
+    )
     control, quality, evidence, engineering = st.tabs(
         ["智能调控", "数据质检", "模型可信度", "工程架构"]
     )
@@ -378,6 +410,7 @@ def main() -> None:
             runtime,
             values,
             tn_standard,
+            minimum_safe_aeration,
             is_synthetic=is_synthetic,
         )
     with quality:

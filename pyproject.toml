@@ -38,6 +38,7 @@ dependencies = [
 plot = ["matplotlib>=3.8"]
 web = ["streamlit>=1.51,<2"]
 dev = [
+  "coverage>=7.6",
   "pytest>=8.0",
   "ruff>=0.6",
 ]

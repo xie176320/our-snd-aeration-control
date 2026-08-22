@@ -133,6 +133,7 @@ def predict_condition(
     runtime: DemoRuntime,
     condition: pd.DataFrame,
     tn_standard: float = model_v4.TN_STANDARD_DEFAULT,
+    minimum_safe_aeration: float | None = None,
 ) -> tuple[dict[str, float], str]:
     """Return structured predictions plus the safety-graded recommendation."""
 
@@ -148,6 +149,7 @@ def predict_condition(
         error_q90=runtime.error_q90,
         support=runtime.support,
         gate=runtime.gate,
+        minimum_safe_aeration=minimum_safe_aeration,
     )
     return prediction, recommendation
 
@@ -156,13 +158,16 @@ def aeration_response_curve(
     runtime: DemoRuntime,
     condition: pd.DataFrame,
     points: int = 41,
+    minimum_safe_aeration: float | None = None,
 ) -> pd.DataFrame:
     """Evaluate the model only inside the historical aeration range."""
 
     if points < 2:
         raise ValueError("响应曲线至少需要 2 个点。")
-    low = float(runtime.data[model_v4.AERATION_COL].min())
-    high = float(runtime.data[model_v4.AERATION_COL].max())
+    low, _, high = model_v4.resolve_aeration_safety_floor(
+        runtime.data,
+        minimum_safe_aeration,
+    )
     records: list[dict[str, object]] = []
     for aeration in np.linspace(low, high, points):
         candidate = condition.copy()
