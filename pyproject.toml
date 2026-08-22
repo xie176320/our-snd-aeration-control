@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "our-snd-aeration-control"
 version = "0.3.0"
-description = "基于 OUR 的污水处理 SND 数据整理、模型验证与曝气调控工具"
+description = "面向污水生化处理的 OUR-SND 数据整理、可信验证与曝气决策工具"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }

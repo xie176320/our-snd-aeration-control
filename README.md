@@ -1,11 +1,11 @@
-# OUR-SND 智能曝气调控开源平台
+# OUR-SND 数据建模与曝气决策支持平台
 
 [![CI](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml/badge.svg)](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10--3.12-3776AB.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Streamlit](https://img.shields.io/badge/Web-Streamlit-FF4B4B.svg)](streamlit_app.py)
 
-> 研究题目：**基于耗氧速率的污水处理同步硝化反硝化智能调控研究**
+> 开源项目主题：**面向污水生化处理的 OUR-SND 数据建模与曝气决策支持**
 
 一套面向污水处理实验数据的 Python 工程：从 Excel/CSV 数据审计、按日期无泄漏验证、TN/SND 双目标预测，到带不确定性和安全边界的分级曝气建议，并提供 CLI、交互式网页、Docker、Codespaces 与 GitHub Actions。
 

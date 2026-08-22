@@ -259,7 +259,7 @@ def main() -> None:
     import streamlit as st
 
     st.set_page_config(
-        page_title="OUR-SND 智能曝气调控",
+        page_title="OUR-SND 数据建模与曝气决策支持",
         page_icon="🌊",
         layout="wide",
         initial_sidebar_state="expanded",
@@ -276,7 +276,7 @@ def main() -> None:
                                   border-radius: 12px; background: #f8fafc;}
         </style>
         <div class="hero">
-          <h1>OUR-SND 智能曝气调控平台</h1>
+          <h1>OUR-SND 数据建模与曝气决策支持平台</h1>
           <p>把污水处理实验数据转化为可审计预测、风险边界和分级曝气建议。</p>
         </div>
         """,
