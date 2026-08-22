@@ -216,3 +216,69 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------------------
+# Project-specific rules: wastewater SND / OUR research
+# ---------------------------------------------------------------------------
+
+# IDEs and operating-system metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# R / RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+renv/library/
+renv/staging/
+renv/python/
+.quarto/
+*_cache/
+*_files/
+
+# Microsoft Office temporary files
+~$*
+*.tmp
+
+# Secrets and local credentials
+.env.*
+!.env.example
+*.pem
+*.key
+/secrets/
+
+# Raw, processed, private, and external datasets are local-only.
+# Only anonymized examples under data/sample may be versioned.
+/data/*
+!/data/README.md
+!/data/sample/
+!/data/sample/**
+
+# Prevent accidental placement of datasets in the repository root.
+/*.csv
+/*.tsv
+/*.xls
+/*.xlsx
+/*.parquet
+/*.feather
+
+# Generated model artifacts and transient outputs
+/artifacts/
+/outputs/
+/results/models/
+/results/logs/
+/results/tmp/
+/logs/
+/tmp/
+/temp/
+*.joblib
+*.pkl
+*.pickle
+*.onnx
+*.h5
+

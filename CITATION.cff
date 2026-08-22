@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "如果本项目对你的研究有帮助，请引用此软件。"
+title: "OUR-SND 智能曝气调控工具"
+type: software
+authors:
+  - family-names: "Xie"
+    given-names: "Zhecheng"
+repository-code: "https://github.com/xie176320/our-snd-aeration-control"
+url: "https://github.com/xie176320/our-snd-aeration-control"
+license: MIT
+version: 0.3.0
+date-released: 2026-08-21
+keywords:
+  - wastewater treatment
+  - oxygen uptake rate
+  - simultaneous nitrification and denitrification
+  - aeration control

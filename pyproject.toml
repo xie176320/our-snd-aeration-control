@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "our-snd-aeration-control"
+version = "0.3.0"
+description = "基于 OUR 的污水处理 SND 数据整理、模型验证与曝气调控工具"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "xie176320" }]
+keywords = [
+  "wastewater-treatment",
+  "oxygen-uptake-rate",
+  "simultaneous-nitrification-denitrification",
+  "machine-learning",
+  "aeration-control",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "joblib>=1.3",
+  "numpy>=1.24",
+  "openpyxl>=3.1",
+  "pandas>=2.0",
+  "scikit-learn>=1.4",
+]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.8"]
+web = ["streamlit>=1.39,<2"]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+snd-control = "wastewater_snd.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/xie176320/our-snd-aeration-control"
+Repository = "https://github.com/xie176320/our-snd-aeration-control"
+Issues = "https://github.com/xie176320/our-snd-aeration-control/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
