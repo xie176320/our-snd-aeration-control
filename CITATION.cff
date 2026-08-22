@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "如果本项目对你的研究有帮助，请引用此软件。"
-title: "OUR-SND 智能曝气调控工具"
+title: "OUR-SND 数据建模与曝气决策支持工具"
 type: software
 authors:
   - family-names: "Xie"
