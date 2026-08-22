@@ -18,6 +18,12 @@ from .demo_runtime import (
     make_condition,
     predict_condition,
 )
+from .experience import (
+    build_decision_report_payload,
+    build_scenario_presets,
+    decision_report_json,
+    decision_report_markdown,
+)
 from .sources import validate_model_frame
 
 REPOSITORY_URL = "https://github.com/xie176320/our-snd-aeration-control"
@@ -61,8 +67,30 @@ def _recommended_aeration(recommendation: str) -> float | None:
 
 def _condition_inputs(
     st, runtime: DemoRuntime, model_source: str
-) -> tuple[dict[str, float], float, float]:
+) -> tuple[dict[str, float], float, float, str]:
     median = runtime.data[model_v4.RAW_MODEL_INPUTS].median(numeric_only=True)
+    presets = build_scenario_presets(runtime.data)
+    preset_by_key = {preset.key: preset for preset in presets}
+    st.sidebar.markdown("### 典型工况一键体验")
+    st.sidebar.caption("点击后自动填入一组合成或本地统计工况，仍可继续手动修改。")
+    button_columns = st.sidebar.columns(2)
+    for index, preset in enumerate(presets):
+        if button_columns[index % 2].button(
+            preset.label,
+            key=f"scenario_{preset.key}",
+            use_container_width=True,
+        ):
+            for column, value in preset.values.items():
+                st.session_state[f"condition_{column}"] = float(value)
+            st.session_state["tn_standard"] = float(preset.tn_standard)
+            st.session_state["minimum_safe_aeration"] = float(
+                preset.minimum_safe_aeration
+            )
+            st.session_state["_active_scenario"] = preset.key
+
+    active_key = str(st.session_state.get("_active_scenario", "stable"))
+    active = preset_by_key.get(active_key, presets[0])
+    st.sidebar.info(f"当前起点：{active.label}。{active.description}")
     st.sidebar.markdown("### 新工况输入")
     st.sidebar.caption(f"默认值来自{model_source}的中位数，可直接修改。")
 
@@ -79,40 +107,58 @@ def _condition_inputs(
     values: dict[str, float] = {}
     for column in model_v4.RAW_MODEL_INPUTS:
         lower = 0.1 if column in (model_v4.AERATION_COL, model_v4.TN_IN_COL) else 0.0
+        widget_key = f"condition_{column}"
+        widget_options = {
+            "min_value": lower,
+            "step": 0.1,
+            "format": "%.4f",
+            "key": widget_key,
+        }
+        if widget_key not in st.session_state:
+            widget_options["value"] = float(median[column])
         values[column] = float(
             st.sidebar.number_input(
                 labels[column],
-                min_value=lower,
-                value=float(median[column]),
-                step=0.1,
-                format="%.4f",
-                key=f"condition_{column}",
+                **widget_options,
             )
         )
+    tn_options = {
+        "min_value": 0.1,
+        "step": 0.5,
+        "key": "tn_standard",
+    }
+    if "tn_standard" not in st.session_state:
+        tn_options["value"] = 15.0
     tn_standard = float(
         st.sidebar.number_input(
             "出水 TN 限值（mg/L）",
-            min_value=0.1,
-            value=15.0,
-            step=0.5,
+            **tn_options,
         )
     )
     historical_low = float(runtime.data[model_v4.AERATION_COL].min())
     historical_high = float(runtime.data[model_v4.AERATION_COL].max())
+    stored_floor = st.session_state.get("minimum_safe_aeration")
+    if stored_floor is not None and not 0.1 <= float(stored_floor) <= historical_high:
+        st.session_state["minimum_safe_aeration"] = historical_low
+    floor_options = {
+        "min_value": 0.1,
+        "max_value": historical_high,
+        "step": 0.1,
+        "help": (
+            "现场应依据池型、搅拌与污泥沉降风险确认。该值仅约束生化池混合曝气，"
+            "MBR 膜擦洗风量需单独核算。"
+        ),
+        "key": "minimum_safe_aeration",
+    }
+    if "minimum_safe_aeration" not in st.session_state:
+        floor_options["value"] = historical_low
     minimum_safe_aeration = float(
         st.sidebar.number_input(
             "生化池混合安全下限（L/min）",
-            min_value=0.1,
-            max_value=historical_high,
-            value=historical_low,
-            step=0.1,
-            help=(
-                "现场应依据池型、搅拌与污泥沉降风险确认。该值仅约束生化池混合曝气，"
-                "MBR 膜擦洗风量需单独核算。"
-            ),
+            **floor_options,
         )
     )
-    return values, tn_standard, minimum_safe_aeration
+    return values, tn_standard, minimum_safe_aeration, active.label
 
 
 def _render_control_tab(
@@ -121,10 +167,12 @@ def _render_control_tab(
     values: dict[str, float],
     tn_standard: float,
     minimum_safe_aeration: float,
+    scenario_label: str,
     *,
     is_synthetic: bool,
 ):
     st.subheader("新工况预测与分级曝气建议")
+    st.info(f"当前体验工况：{scenario_label}。侧栏参数可继续修改。")
     if is_synthetic:
         st.caption(
             "模型只在合成演示数据的历史范围内给出 A/B/C 级建议；"
@@ -184,6 +232,39 @@ def _render_control_tab(
     st.markdown("#### TN 去除率与 SND 响应")
     ratio_curve = curve.set_index(model_v4.AERATION_COL)[["预测TN去除率", "预测SND率"]]
     st.line_chart(ratio_curve)
+
+    report_payload = build_decision_report_payload(
+        condition=condition,
+        prediction=prediction,
+        recommendation=recommendation,
+        recommended_aeration=recommended,
+        scenario_label=scenario_label,
+        tn_standard=tn_standard,
+        minimum_safe_aeration=minimum_safe_aeration,
+        is_synthetic=is_synthetic,
+    )
+    markdown_report = decision_report_markdown(report_payload)
+    json_report = decision_report_json(report_payload)
+    st.markdown("#### 导出本次决策报告")
+    st.caption(
+        "报告只包含本次输入、预测和安全建议，不包含训练数据；"
+        "公开演示导出的仍是合成数据。"
+    )
+    report_columns = st.columns(2)
+    report_columns[0].download_button(
+        "下载 Markdown 报告",
+        data=markdown_report,
+        file_name="our_snd_decision_report.md",
+        mime="text/markdown; charset=utf-8",
+        use_container_width=True,
+    )
+    report_columns[1].download_button(
+        "下载 JSON 报告",
+        data=json_report,
+        file_name="our_snd_decision_report.json",
+        mime="application/json; charset=utf-8",
+        use_container_width=True,
+    )
 
 
 def _render_quality_tab(
@@ -396,7 +477,7 @@ def main() -> None:
         st.info("当前为公开在线演示：文件上传已关闭，全部结果来自运行时生成的合成数据。")
         st.sidebar.success("公开合成演示 · 线上文件上传已关闭")
 
-    values, tn_standard, minimum_safe_aeration = _condition_inputs(
+    values, tn_standard, minimum_safe_aeration, scenario_label = _condition_inputs(
         st,
         runtime,
         model_source,
@@ -411,6 +492,7 @@ def main() -> None:
             values,
             tn_standard,
             minimum_safe_aeration,
+            scenario_label,
             is_synthetic=is_synthetic,
         )
     with quality:
