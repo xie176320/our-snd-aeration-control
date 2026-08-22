@@ -51,7 +51,7 @@ flowchart TD
 | 可信验证 | 固定日期 5 折、重复日期 5 折、留一日期、滚动时间验证 |
 | 模型研究 | PLS、Ridge、SVR 集成、TN-SND 联合模型、实时 OUR 特征消融 |
 | 限定校准 | 新日期低/中/高三个曝气实测点校准，只在当日范围内插值 |
-| 安全决策 | 90% 误差裕量、最近邻支持域、原始范围、剂量效应门控 |
+| 安全决策 | 90% 误差裕量、最近邻支持域、剂量效应门控、可配置生化池混合曝气硬下限 |
 | 工程交付 | 命令行、Streamlit、Docker、Codespaces、CI 和自动测试 |
 
 详细设计见 [系统架构与技术方案](docs/architecture.md)。
@@ -134,8 +134,14 @@ snd-control validate --data outputs/demo/demo_model_input.csv
 snd-control train --data outputs/demo/demo_model_input.csv --output-dir outputs/demo-model
 snd-control predict \
   --model outputs/demo-model/model_bundle.joblib \
-  --condition configs/prediction_condition.example.json
+  --condition configs/prediction_condition.example.json \
+  --minimum-safe-aeration 3.8
 ```
+
+上例的 `3.8 L/min` 仅用于展示参数格式，不是可复制的现场设定值。实际下限应由
+池型、液位、搅拌条件、污泥沉降风险和设备能力共同确认。程序采用
+`max(训练数据历史下限, 配置下限)` 作为有效搜索下界；任何建议和网页响应曲线
+都不得低于该值。该参数只约束生化池混合曝气，MBR 膜擦洗风量必须独立核算。
 
 演示 CSV 由固定随机种子的生成器在 `outputs/` 中即时创建，不随仓库发布，
 只用于测试和界面演示，不得用于论文结论或现场控制。
@@ -147,6 +153,8 @@ snd-control predict \
 计算的成绩。这样既能完整复现实验方法，也不会把闭源研究资产变相公开。
 
 CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
+
+- 全部自动测试通过且语句覆盖率不低于 60%；
 
 - 同一日期不会跨训练集和验证集；
 - 数据质量闸门、预测边界和三点校准接口可运行；

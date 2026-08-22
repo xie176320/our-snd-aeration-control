@@ -1073,6 +1073,37 @@ def predict_one_condition(
     return predictions
 
 
+def resolve_aeration_safety_floor(
+    data: pd.DataFrame,
+    minimum_safe_aeration: float | None = None,
+) -> tuple[float, float, float]:
+    """Return the effective mixing floor and observed aeration bounds.
+
+    This is a hard engineering constraint for biological-tank mixing. It is
+    deliberately separate from MBR membrane-scour air demand. When omitted,
+    the observed lower bound remains the conservative default.
+    """
+
+    historical_low = float(data[AERATION_COL].min())
+    historical_high = float(data[AERATION_COL].max())
+    if not np.isfinite(historical_low) or not np.isfinite(historical_high):
+        raise ValueError("训练数据的曝气范围必须是有限数字。")
+    requested_floor = (
+        historical_low
+        if minimum_safe_aeration is None
+        else float(minimum_safe_aeration)
+    )
+    if not np.isfinite(requested_floor) or requested_floor <= 0:
+        raise ValueError("生化池混合安全下限必须是大于 0 的有限数字。")
+    effective_floor = max(historical_low, requested_floor)
+    if effective_floor > historical_high:
+        raise ValueError(
+            "生化池混合安全下限高于训练数据曝气上限，当前模型没有可用的安全搜索域；"
+            "请先补充覆盖该下限以上的实测数据。"
+        )
+    return effective_floor, historical_low, historical_high
+
+
 def recommend_aeration(
     row: pd.DataFrame,
     tn_standard: float,
@@ -1086,6 +1117,7 @@ def recommend_aeration(
     trial_step_fraction: float = TRIAL_STEP_FRACTION_DEFAULT,
     safety_margin: float = TN_SAFETY_MARGIN_DEFAULT,
     search_step: float = SEARCH_STEP_DEFAULT,
+    minimum_safe_aeration: float | None = None,
 ) -> str:
     """把预测结果转换为始终有数值输出的分级曝气建议。
 
@@ -1107,8 +1139,17 @@ def recommend_aeration(
     safety_margin = max(float(safety_margin), 0.0)
 
     current_aeration = float(row.iloc[0][AERATION_COL])
-    historical_low = float(data[AERATION_COL].min())
-    historical_high = float(data[AERATION_COL].max())
+    if not np.isfinite(current_aeration) or current_aeration <= 0:
+        raise ValueError("当前曝气量必须是大于 0 的有限数字。")
+    engineering_low, historical_low, historical_high = resolve_aeration_safety_floor(
+        data,
+        minimum_safe_aeration,
+    )
+    requested_floor = (
+        historical_low
+        if minimum_safe_aeration is None
+        else float(minimum_safe_aeration)
+    )
 
     def rounded(value: float) -> float:
         return max(search_step, float(round(value / search_step) * search_step))
@@ -1155,14 +1196,14 @@ def recommend_aeration(
     # 先计算严格的全历史范围优化目标。只有门控和联合支持域均通过时，
     # 才允许把它称为正式优化目标。
     grid = np.arange(
-        historical_low,
+        engineering_low,
         historical_high + search_step * 0.5,
         search_step,
     )
     grid = np.unique(
         np.clip(
-            np.append(grid, [historical_low, historical_high, current_aeration]),
-            historical_low,
+            np.append(grid, [engineering_low, historical_high, current_aeration]),
+            engineering_low,
             historical_high,
         )
     )
@@ -1192,7 +1233,16 @@ def recommend_aeration(
     )
     maximum_step = max(maximum_step, search_step)
 
-    if strict_candidates:
+    if current_aeration < engineering_low:
+        # The plant-defined mixing floor is a hard constraint, not a model
+        # optimum, so it takes precedence over the normal one-step trust region.
+        recommended_value = engineering_low
+        level = "B级—混合安全下限纠偏推荐"
+        decision_reason = (
+            f"当前曝气量低于有效混合安全下限 {engineering_low:.2f} L/min；"
+            "本次值由工程硬约束给出，不代表模型节能最优点。"
+        )
+    elif strict_candidates:
         best = min(strict_candidates, key=lambda item: float(item["aeration"]))
         steady_target = float(best["aeration"])
         delta_to_target = steady_target - current_aeration
@@ -1206,14 +1256,13 @@ def recommend_aeration(
     else:
         # 门控未通过时不再硬停止，而是在当前值附近构造最多一个小步动作。
         if current_aeration > historical_high:
-            lower_value = rounded_action(current_aeration - maximum_step)
+            lower_value = rounded_action(
+                max(engineering_low, current_aeration - maximum_step)
+            )
             upper_value = current_aeration
-        elif current_aeration < historical_low:
-            lower_value = current_aeration
-            upper_value = rounded_action(current_aeration + maximum_step)
         else:
             lower_value = rounded_action(
-                max(historical_low, current_aeration - maximum_step)
+                max(engineering_low, current_aeration - maximum_step)
             )
             upper_value = rounded_action(
                 min(historical_high, current_aeration + maximum_step)
@@ -1297,6 +1346,8 @@ def recommend_aeration(
             else:
                 decision_reason = "当前值已接近历史曝气下限，本轮维持。"
 
+    # Defensive final clamp: no model branch may cross the physical mixing floor.
+    recommended_value = max(float(recommended_value), engineering_low)
     recommended = evaluate(recommended_value)
     change = recommended_value - current_aeration
     change_percent = 100.0 * change / current_aeration
@@ -1307,6 +1358,10 @@ def recommend_aeration(
     )
     lines = [
         f"本次建议曝气量：{recommended_value:.2f} L/min",
+        (
+            f"有效混合安全下限：{engineering_low:.2f} L/min"
+            f"（配置 {requested_floor:.2f}；历史下限 {historical_low:.2f}）"
+        ),
         f"推荐等级：{level}",
         (
             f"调节动作：{current_aeration:.2f} → {recommended_value:.2f} L/min；"
@@ -1325,6 +1380,7 @@ def recommend_aeration(
             f"推荐值下 TN 去除率：{float(recommended['removal']):.2%}",
             f"推荐值下 SND 率：{float(recommended['snd']):.2%}",
             "推荐依据：" + decision_reason,
+            "边界说明：该下限只约束生化池混合曝气，不包含 MBR 膜擦洗风量。",
         ]
     )
 
@@ -1373,6 +1429,7 @@ def interactive_loop(
     trial_step_abs: float,
     trial_step_fraction: float,
     safety_margin: float,
+    minimum_safe_aeration: float | None = None,
 ) -> None:
     while True:
         print("\n" + "=" * 68)
@@ -1463,6 +1520,7 @@ def interactive_loop(
                     trial_step_abs=trial_step_abs,
                     trial_step_fraction=trial_step_fraction,
                     safety_margin=safety_margin,
+                    minimum_safe_aeration=minimum_safe_aeration,
                 )
             )
         except KeyboardInterrupt:
@@ -1623,6 +1681,12 @@ def parse_args() -> argparse.Namespace:
         default=TN_SAFETY_MARGIN_DEFAULT,
         help="允许降曝气所需的 TN 保守安全余量，默认 1.0 mg/L",
     )
+    parser.add_argument(
+        "--minimum-safe-aeration",
+        type=float,
+        default=None,
+        help="生化池混合曝气硬下限；省略时使用训练数据历史下限",
+    )
     return parser.parse_args()
 
 
@@ -1673,6 +1737,7 @@ def main() -> None:
             trial_step_abs=args.trial_step_abs,
             trial_step_fraction=args.trial_step_fraction,
             safety_margin=args.tn_safety_margin,
+            minimum_safe_aeration=args.minimum_safe_aeration,
         )
 
 

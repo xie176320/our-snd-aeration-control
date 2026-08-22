@@ -50,6 +50,53 @@ class DemoRuntimeTests(unittest.TestCase):
             self.runtime.data[model_v4.AERATION_COL].max(),
         )
 
+    def test_recommendation_cannot_cross_configured_mixing_floor(self) -> None:
+        historical_low = float(self.runtime.data[model_v4.AERATION_COL].min())
+        historical_high = float(self.runtime.data[model_v4.AERATION_COL].max())
+        floor = historical_low + 0.35 * (historical_high - historical_low)
+        condition = self.condition.copy()
+        condition.loc[condition.index[0], model_v4.AERATION_COL] = floor - 0.1
+
+        _, recommendation = predict_condition(
+            self.runtime,
+            condition,
+            minimum_safe_aeration=floor,
+        )
+
+        match = re.search(r"本次建议曝气量：([0-9.]+) L/min", recommendation)
+        self.assertIsNotNone(match)
+        self.assertGreaterEqual(float(match.group(1)), floor - 0.01)
+        self.assertIn("B级—混合安全下限纠偏推荐", recommendation)
+        self.assertIn("不包含 MBR 膜擦洗风量", recommendation)
+
+    def test_response_curve_starts_at_configured_mixing_floor(self) -> None:
+        historical_low = float(self.runtime.data[model_v4.AERATION_COL].min())
+        historical_high = float(self.runtime.data[model_v4.AERATION_COL].max())
+        floor = historical_low + 0.25 * (historical_high - historical_low)
+        curve = aeration_response_curve(
+            self.runtime,
+            self.condition,
+            points=7,
+            minimum_safe_aeration=floor,
+        )
+        self.assertAlmostEqual(curve[model_v4.AERATION_COL].min(), floor)
+        self.assertAlmostEqual(curve[model_v4.AERATION_COL].max(), historical_high)
+
+    def test_invalid_mixing_floor_is_rejected(self) -> None:
+        historical_high = float(self.runtime.data[model_v4.AERATION_COL].max())
+        with self.assertRaisesRegex(ValueError, "必须是大于 0 的有限数字"):
+            predict_condition(
+                self.runtime,
+                self.condition,
+                minimum_safe_aeration=0.0,
+            )
+        with self.assertRaisesRegex(ValueError, "高于训练数据曝气上限"):
+            predict_condition(
+                self.runtime,
+                self.condition,
+                minimum_safe_aeration=historical_high + 1.0,
+            )
+
     def test_invalid_condition_is_rejected(self) -> None:
         values = {column: 1.0 for column in model_v4.RAW_MODEL_INPUTS}
         values[model_v4.H_MAX_COL] = -1.0
