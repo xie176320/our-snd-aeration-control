@@ -8,16 +8,15 @@ the repository's synthetic dataset and exposes structured prediction helpers.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
 
 import numpy as np
 import pandas as pd
 
 from . import model_v4
 from .synthetic import demo_frame
-
 
 DEMO_MODEL_NAMES = {
     model_v4.REMOVAL_COL: "PLS2_原工程特征_记录级",
@@ -42,26 +41,24 @@ class DemoRuntime:
 def _documented_specs() -> dict[str, model_v4.ModelSpec]:
     selected: dict[str, model_v4.ModelSpec] = {}
     for target, expected_name in DEMO_MODEL_NAMES.items():
-        matches = [
-            spec
-            for spec in model_v4.candidate_models(target)
-            if spec.name == expected_name
-        ]
+        matches = [spec for spec in model_v4.candidate_models(target) if spec.name == expected_name]
         if len(matches) != 1:
             raise RuntimeError(f"找不到演示模型：{target} / {expected_name}")
         selected[target] = matches[0]
     return selected
 
 
-def build_demo_runtime(data_path: Path | None = None) -> DemoRuntime:
-    """Fit demo baselines from generated data or an explicitly supplied CSV."""
+def build_demo_runtime(
+    data_source: Path | pd.DataFrame | None = None,
+) -> DemoRuntime:
+    """Fit demo baselines from generated data, a frame, or an explicit CSV."""
 
-    if data_path is None:
-        data, info = model_v4.clean_model_frame(
-            demo_frame(), encoding="synthetic-generator"
-        )
+    if data_source is None:
+        data, info = model_v4.clean_model_frame(demo_frame(), encoding="synthetic-generator")
+    elif isinstance(data_source, pd.DataFrame):
+        data, info = model_v4.clean_model_frame(data_source, encoding="in-memory-local-import")
     else:
-        data, info = model_v4.load_and_clean_data(data_path)
+        data, info = model_v4.load_and_clean_data(data_source)
     selected = _documented_specs()
     oof_store: dict[tuple[str, str, str], model_v4.OOFResult] = {}
     metric_rows: list[dict[str, object]] = []
@@ -85,12 +82,8 @@ def build_demo_runtime(data_path: Path | None = None) -> DemoRuntime:
             }
         )
 
-    trained, error_q90, support = model_v4.train_selected_models(
-        data, selected, oof_store
-    )
-    gate = model_v4.aeration_optimization_gate(
-        model_v4.aeration_effect_diagnostic(data)
-    )
+    trained, error_q90, support = model_v4.train_selected_models(data, selected, oof_store)
+    gate = model_v4.aeration_optimization_gate(model_v4.aeration_effect_diagnostic(data))
     return DemoRuntime(
         data=data,
         info=info,
@@ -110,9 +103,7 @@ def make_condition(values: Mapping[str, object]) -> pd.DataFrame:
     if missing:
         raise ValueError("工况缺少字段：" + "、".join(missing))
 
-    record: dict[str, object] = {
-        model_v4.DATE_COL: str(values.get(model_v4.DATE_COL, "web-demo"))
-    }
+    record: dict[str, object] = {model_v4.DATE_COL: str(values.get(model_v4.DATE_COL, "web-demo"))}
     for column in model_v4.RAW_MODEL_INPUTS:
         try:
             value = float(values[column])
@@ -147,9 +138,7 @@ def predict_condition(
 
     if tn_standard <= 0:
         raise ValueError("出水 TN 限值必须大于 0。")
-    prediction = model_v4.predict_one_condition(
-        condition, runtime.selected, runtime.trained
-    )
+    prediction = model_v4.predict_one_condition(condition, runtime.selected, runtime.trained)
     recommendation = model_v4.recommend_aeration(
         row=condition,
         tn_standard=tn_standard,
@@ -178,17 +167,12 @@ def aeration_response_curve(
     for aeration in np.linspace(low, high, points):
         candidate = condition.copy()
         candidate.loc[candidate.index[0], model_v4.AERATION_COL] = float(aeration)
-        prediction = model_v4.predict_one_condition(
-            candidate, runtime.selected, runtime.trained
-        )
+        prediction = model_v4.predict_one_condition(candidate, runtime.selected, runtime.trained)
         removal_lower = max(
             0.0,
-            prediction[model_v4.REMOVAL_COL]
-            - runtime.error_q90[model_v4.REMOVAL_COL],
+            prediction[model_v4.REMOVAL_COL] - runtime.error_q90[model_v4.REMOVAL_COL],
         )
-        conservative_tn = float(
-            candidate.iloc[0][model_v4.TN_IN_COL] * (1.0 - removal_lower)
-        )
+        conservative_tn = float(candidate.iloc[0][model_v4.TN_IN_COL] * (1.0 - removal_lower))
         tn_supported = model_v4.support_distance(
             candidate,
             model_v4.REMOVAL_COL,

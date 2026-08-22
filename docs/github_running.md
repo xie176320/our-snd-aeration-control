@@ -16,15 +16,15 @@ bash scripts/run_demo.sh
 
 `run_demo.sh` 使用明确标注的合成数据，依次完成数据生成、校验、R² 门控训练与同日三点校准预测。结果保存在 `outputs/demo/`。
 
-## 2. 在授权环境运行私有数据
+## 2. 在本机运行私有数据
 
-不要把真实 CSV 提交到 Git。只在 Codespaces 当前环境中把文件上传到：
+Codespaces 是云环境，不作为敏感 CSV 的默认导入入口。请把仓库克隆到自己的
+电脑，然后运行 `bash scripts/start_local.sh`；Windows 可双击
+`scripts\start_local.cmd`。网页仅绑定 `127.0.0.1`，导入文件只在当前会话
+内存中处理。
 
-```text
-data/processed/model_input.csv
-```
-
-然后执行：
+需要保存可追溯训练结果时，把真实 CSV 放在被 Git 忽略的
+`data/processed/model_input.csv`，然后在本机执行：
 
 ```bash
 bash scripts/run_private_data.sh
@@ -74,4 +74,4 @@ R²>0.8 只对应“目标日期已经取得三个校准点，并在其曝气范
 
 ## 5. 数据安全
 
-`.gitignore` 已排除 `data/processed/`、根目录下的 CSV/Excel、`outputs/` 和模型文件。上传真实数据到 Codespaces 后，不要使用 `git add -f` 强制加入这些文件。Codespace 不再使用时可删除；重要的模型评估结果请下载到安全位置保存。
+`.gitignore` 已排除 `data/processed/`、根目录下的 CSV/Excel、`outputs/` 和模型文件。不要使用 `git add -f` 强制加入这些文件。公开网页没有上传控件；本地导入模式也不会自动写出 CSV 或模型文件。

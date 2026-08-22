@@ -28,7 +28,22 @@ snd-control --help
 snd-control schema
 ```
 
-## 2. 审计 Excel
+## 2. 一键本地网页导入
+
+macOS / Linux：
+
+```bash
+bash scripts/start_local.sh
+```
+
+Windows：双击 `scripts\start_local.cmd`，或在命令提示符运行它。脚本自动建立
+虚拟环境、安装网页依赖并打开 `http://127.0.0.1:8501`。左侧导入 CSV 后，
+程序先执行与 CLI 相同的数据质量闸门；只有校验通过才会在当前会话内存中建模。
+
+本地导入不会写入仓库或 `outputs/`。关闭网页终端即可结束进程。公开部署默认
+没有文件选择器，不要在公网主机上手工设置 `SND_APP_MODE=local`。
+
+## 3. 审计 Excel
 
 ```bash
 snd-control audit-sources \
@@ -48,7 +63,7 @@ snd-control audit-sources \
 
 建议把确认后的文件保存到被忽略的 `data/processed/model_input_v1.csv`。
 
-## 3. 数据校验
+## 4. 数据校验
 
 ```bash
 snd-control validate --data data/processed/model_input_v1.csv
@@ -58,7 +73,7 @@ snd-control validate --data data/processed/model_input_v1.csv
 
 单行缺失或越界会先列为排除警告；只要排除后仍有至少 40 条完整记录和 5 个日期组，训练可以继续。训练目录中的 `input_validation.json` 和 `input_excluded_rows.csv` 会保留汇总与 CSV 原始行号，便于追溯。
 
-## 4. 训练
+## 5. 训练
 
 ```bash
 snd-control train \
@@ -88,7 +103,7 @@ snd-control train --data data/processed/model_input.csv --output-dir outputs/pri
 snd-control train --data data/processed/model_input_v1.csv --output-dir outputs/model-v4 --interactive
 ```
 
-## 5. OUR 特征消融
+## 6. OUR 特征消融
 
 若 CSV 同时包含 AOB/NOB 实时 OUR，可在完全相同的日期分组规则下比较特征组合：
 
@@ -101,7 +116,7 @@ snd-control ablate-our \
 重点看“重复分组 R² 均值、标准差和稳定得分”，不要因单次固定 5 折略高
 就选更复杂的特征组。特征选择结论必须来自授权数据的本地输出。
 
-## 6. 当日三点校准模型
+## 7. 当日三点校准模型
 
 该模式用于满足“当日已有少量实测结果，再预测当天其余曝气工况”的场景：
 
@@ -125,7 +140,7 @@ snd-control predict-calibrated \
 
 三个校准工况应在安全混合下限以上设置，并分别稳定至少 1 个 HRT 后测定。该模式不是完全未见日期的冷启动模型，不能在没有当日 TN/SND 实测值时使用。
 
-## 7. 独立冷启动预测
+## 8. 独立冷启动预测
 
 复制并修改 `configs/prediction_condition.example.json`。至少提供最大 OUR、温度、当前曝气量、进水 TN/COD；异养菌实时 OUR 可省略，此时程序会按训练数据近邻估算并明确提示。
 
@@ -138,7 +153,7 @@ snd-control predict \
 
 建议先在历史回放或受控小试中验证，再用于任何现场操作。B 级建议执行后至少稳定一个 HRT，并复测 TN、NH₄⁺-N、NO₃⁻-N、NO₂⁻-N 和 DO。
 
-## 8. 程序自检
+## 9. 程序自检
 
 ```bash
 python -m unittest discover -s tests -v

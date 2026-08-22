@@ -1,4 +1,4 @@
-.PHONY: install test demo web docker lint ci
+.PHONY: install test demo web local docker lint ci
 
 install:
 	python -m pip install -e ".[web,plot,dev]"
@@ -11,6 +11,9 @@ demo:
 
 web:
 	streamlit run streamlit_app.py
+
+local:
+	bash scripts/start_local.sh
 
 docker:
 	docker compose up --build
