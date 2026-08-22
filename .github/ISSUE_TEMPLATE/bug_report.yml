@@ -1,0 +1,55 @@
+name: Bug 报告
+description: 报告可复现的程序问题
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "请勿上传真实原始实验数据、账号信息或现场凭据。"
+  - type: input
+    id: version
+    attributes:
+      label: 版本或提交
+      placeholder: "v0.3.0 / commit SHA"
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: 组件
+      options:
+        - 数据审计
+        - 模型训练
+        - 曝气推荐
+        - Streamlit 网页
+        - Docker / CI
+        - 文档
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 请使用合成或脱敏数据描述最小复现步骤。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已移除敏感数据和凭据
+          required: true
+        - label: 我已搜索现有 Issue
+          required: true

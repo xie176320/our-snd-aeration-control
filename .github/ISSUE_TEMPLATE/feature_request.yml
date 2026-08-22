@@ -1,0 +1,32 @@
+name: 功能建议
+description: 提议新的科研或工程能力
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 请先描述研究或运行问题，而不是只给出技术名词。
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 验证方案
+      description: 说明如何避免日期泄漏、如何评价，以及需要哪些安全边界。
+    validations:
+      required: true
+  - type: checkboxes
+    id: data
+    attributes:
+      label: 数据确认
+      options:
+        - label: 示例不会包含未授权的真实数据
+          required: true
