@@ -1,7 +1,12 @@
+<p align="center">
+  <img src="docs/assets/project-cover.png" alt="OUR-SND 数据建模与曝气决策支持平台项目封面" width="100%">
+</p>
+
 # OUR-SND 数据建模与曝气决策支持平台
 
 [![CI](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml/badge.svg)](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10--3.12-3776AB.svg)](https://www.python.org/)
+[![Version](https://img.shields.io/badge/version-v0.4.0-0A7D74.svg)](https://github.com/xie176320/our-snd-aeration-control/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Streamlit](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B.svg)](https://our-snd-aeration-control.streamlit.app/)
 
@@ -12,6 +17,10 @@
 _A reproducible research and decision-support toolkit for OUR-informed SND modelling and safety-graded aeration recommendations._
 
 **[▶ 打开公开在线演示](https://our-snd-aeration-control.streamlit.app/)** — 无需安装、无需上传文件；演示仅使用运行时生成的合成数据。
+
+[![OUR-SND 公开在线演示界面](docs/assets/online-demo.png)](https://our-snd-aeration-control.streamlit.app/)
+
+<p align="center"><sub>公开部署使用运行时合成数据，线上文件上传入口已关闭。点击截图进入在线演示。</sub></p>
 
 ## 为什么做这个项目
 
@@ -198,6 +207,7 @@ CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
 - [数据字典](docs/data_dictionary.md)
 - [详细运行手册](docs/running.md)
 - [部署与运行手册](docs/deployment.md)
+- [v0.4.0 发布说明](docs/releases/v0.4.0.md)
 - [校招作品集使用指南](docs/portfolio_guide.md)
 - [贡献指南](CONTRIBUTING.md)与[安全策略](SECURITY.md)
 
