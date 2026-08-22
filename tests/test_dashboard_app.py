@@ -30,6 +30,24 @@ class DashboardAppTests(unittest.TestCase):
         self.assertEqual(len(app.exception), 0)
         self.assertEqual(len(app.get("file_uploader")), 0)
         self.assertTrue(any("文件上传已关闭" in item.value for item in app.info))
+        self.assertEqual(
+            {button.label for button in app.button},
+            {"稳定运行", "高 TN 风险", "接近混合下限", "低于安全下限"},
+        )
+        self.assertEqual(
+            {button.label for button in app.get("download_button")},
+            {"下载 Markdown 报告", "下载 JSON 报告"},
+        )
+
+    def test_one_click_below_floor_scenario_triggers_safety_correction(self) -> None:
+        app = self._run(mode="public", import_switch="0")
+        trigger = next(button for button in app.button if button.label == "低于安全下限")
+        app = trigger.click().run(timeout=60)
+        self.assertEqual(len(app.exception), 0)
+        self.assertIn("B级—混合安全下限纠偏推荐", app.code[0].value)
+        self.assertTrue(
+            any("当前体验工况：低于安全下限" in item.value for item in app.info)
+        )
 
     def test_incomplete_local_config_falls_back_to_public(self) -> None:
         app = self._run(mode="local", import_switch="0")

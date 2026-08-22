@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml/badge.svg)](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10--3.12-3776AB.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-v0.4.0-0A7D74.svg)](https://github.com/xie176320/our-snd-aeration-control/releases)
+[![Version](https://img.shields.io/badge/version-v0.5.0-0A7D74.svg)](https://github.com/xie176320/our-snd-aeration-control/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Streamlit](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B.svg)](https://our-snd-aeration-control.streamlit.app/)
 
@@ -17,6 +17,9 @@
 _A reproducible research and decision-support toolkit for OUR-informed SND modelling and safety-graded aeration recommendations._
 
 **[▶ 打开公开在线演示](https://our-snd-aeration-control.streamlit.app/)** — 无需安装、无需上传文件；演示仅使用运行时生成的合成数据。
+
+进入页面后可一键切换**稳定运行、高 TN 风险、接近混合下限、低于安全下限**四种
+典型工况，并下载只包含本次输入与结果的 **Markdown / JSON 决策报告**。
 
 [![OUR-SND 公开在线演示界面](docs/assets/online-demo.png)](https://our-snd-aeration-control.streamlit.app/)
 
@@ -52,7 +55,7 @@ flowchart TD
 | 模型研究 | PLS、Ridge、SVR 集成、TN-SND 联合模型、实时 OUR 特征消融 |
 | 限定校准 | 新日期低/中/高三个曝气实测点校准，只在当日范围内插值 |
 | 安全决策 | 90% 误差裕量、最近邻支持域、剂量效应门控、可配置生化池混合曝气硬下限 |
-| 工程交付 | 命令行、Streamlit、Docker、Codespaces、CI 和自动测试 |
+| 工程交付 | 典型工况一键体验、Markdown/JSON 报告、命令行、Streamlit、Docker、Codespaces、CI 和自动测试 |
 
 详细设计见 [系统架构与技术方案](docs/architecture.md)。
 
@@ -73,6 +76,8 @@ flowchart TD
 
 访问 **[our-snd-aeration-control.streamlit.app](https://our-snd-aeration-control.streamlit.app/)**。
 公开部署固定使用合成数据，线上没有文件上传入口，也不读取或保存真实实验数据。
+从左侧点击任一典型工况即可自动填入参数；完成预测后可在“导出本次决策报告”
+下载 Markdown 或 JSON。公开演示下载的报告仍只包含合成工况及其计算结果。
 
 ### 方式二：GitHub Codespaces
 
@@ -215,6 +220,7 @@ CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
 - [数据字典](docs/data_dictionary.md)
 - [详细运行手册](docs/running.md)
 - [部署与运行手册](docs/deployment.md)
+- [v0.5.0 发布说明](docs/releases/v0.5.0.md)
 - [v0.4.0 发布说明](docs/releases/v0.4.0.md)
 - [校招作品集使用指南](docs/portfolio_guide.md)
 - [贡献指南](CONTRIBUTING.md)与[安全策略](SECURITY.md)

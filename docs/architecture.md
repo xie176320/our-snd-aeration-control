@@ -26,7 +26,7 @@ flowchart TD
 | 校准 | `calibrated.py` | 同日低/中/高三点残差校准 | 只允许校准区间内插值 |
 | 消融 | `ablation.py` | 比较最大 OUR 与实时 OUR 组合 | 使用完全相同的日期划分 |
 | 决策 | `model_v4.py` | 误差裕量、支持域、剂量效应门控 | 始终输出数值，但不越权宣称最优 |
-| 交互 | `cli.py`, `dashboard.py` | 命令行、本地导入质检、预测与曲线 | 公共网页不渲染上传控件 |
+| 交互 | `cli.py`, `dashboard.py`, `experience.py` | 命令行、典型工况、报告、本地导入质检、预测与曲线 | 公共网页不渲染上传控件 |
 | 交付 | Docker, Actions, Codespaces | 环境复现、自动测试、容器部署 | 只携带合成样例 |
 
 ## 4. 关键数据流
