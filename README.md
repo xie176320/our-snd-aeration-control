@@ -3,13 +3,15 @@
 [![CI](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml/badge.svg)](https://github.com/xie176320/our-snd-aeration-control/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10--3.12-3776AB.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Streamlit](https://img.shields.io/badge/Web-Streamlit-FF4B4B.svg)](streamlit_app.py)
+[![Streamlit](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B.svg)](https://our-snd-aeration-control.streamlit.app/)
 
 > 开源项目主题：**面向污水生化处理的 OUR-SND 数据建模与曝气决策支持**
 
 一套面向污水处理实验数据的 Python 工程：从 Excel/CSV 数据审计、按日期无泄漏验证、TN/SND 双目标预测，到带不确定性和安全边界的分级曝气建议，并提供 CLI、交互式网页、Docker、Codespaces 与 GitHub Actions。
 
 _A reproducible research and decision-support toolkit for OUR-informed SND modelling and safety-graded aeration recommendations._
+
+**[▶ 打开公开在线演示](https://our-snd-aeration-control.streamlit.app/)** — 无需安装、无需上传文件；演示仅使用运行时生成的合成数据。
 
 ## 为什么做这个项目
 
@@ -58,7 +60,12 @@ flowchart TD
 
 ## 立即运行
 
-### 方式一：GitHub Codespaces
+### 方式一：公开在线演示（无需安装）
+
+访问 **[our-snd-aeration-control.streamlit.app](https://our-snd-aeration-control.streamlit.app/)**。
+公开部署固定使用合成数据，线上没有文件上传入口，也不读取或保存真实实验数据。
+
+### 方式二：GitHub Codespaces
 
 在仓库中选择 **Code → Codespaces → Create codespace**，然后运行：
 
@@ -69,7 +76,7 @@ streamlit run streamlit_app.py
 
 Codespaces 中默认仍是公开合成演示，不提供文件上传。
 
-### 方式二：一键本地导入（推荐）
+### 方式三：一键本地导入（推荐）
 
 先克隆项目，然后运行对应入口；脚本会自动建立 `.venv`、安装缺少的依赖、
 打开 `http://127.0.0.1:8501`，不需要手工设置环境变量。
@@ -91,7 +98,7 @@ scripts\start_local.cmd
 左侧选择符合数据契约的 CSV。文件先通过字段、范围、40 条有效记录与 5 个
 日期/批次闸门；通过后才在本地建立模型并替换合成演示模型。
 
-### 方式三：Docker 一条命令本地导入
+### 方式四：Docker 一条命令本地导入
 
 ```bash
 docker compose up --build
