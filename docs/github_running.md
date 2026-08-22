@@ -20,7 +20,7 @@ bash scripts/run_demo.sh
 
 Codespaces 是云环境，不作为敏感 CSV 的默认导入入口。请把仓库克隆到自己的
 电脑，然后运行 `bash scripts/start_local.sh`；Windows 可双击
-`scripts\\start_local.cmd`。网页仅绑定 `127.0.0.1`，导入文件只在当前会话
+`scripts\start_local.cmd`。网页仅绑定 `127.0.0.1`，导入文件只在当前会话
 内存中处理。
 
 需要保存可追溯训练结果时，把真实 CSV 放在被 Git 忽略的
