@@ -36,7 +36,7 @@ dependencies = [
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
-web = ["streamlit>=1.39,<2"]
+web = ["streamlit>=1.51,<2"]
 dev = [
   "pytest>=8.0",
   "ruff>=0.6",

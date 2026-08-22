@@ -45,6 +45,9 @@ jobs:
 
       - name: Smoke-test dashboard
         if: matrix.python-version == '3.12'
+        env:
+          SND_APP_MODE: public
+          SND_LOCAL_IMPORT: "0"
         run: |
           streamlit run streamlit_app.py \
             --server.headless true \
@@ -65,6 +68,34 @@ jobs:
                   time.sleep(1)
           else:
               raise SystemExit("dashboard health check failed")
+          PY
+          kill "${dashboard_pid}"
+
+      - name: Smoke-test local import mode
+        if: matrix.python-version == '3.12'
+        env:
+          SND_APP_MODE: local
+          SND_LOCAL_IMPORT: "1"
+        run: |
+          streamlit run streamlit_app.py \
+            --server.headless true \
+            --server.address 127.0.0.1 \
+            --server.port 8502 > /tmp/streamlit-local.log 2>&1 &
+          dashboard_pid=$!
+          python - <<'PY'
+          import time
+          import urllib.request
+
+          url = "http://127.0.0.1:8502/_stcore/health"
+          for _ in range(30):
+              try:
+                  with urllib.request.urlopen(url, timeout=2) as response:
+                      if response.status == 200:
+                          break
+              except Exception:
+                  time.sleep(1)
+          else:
+              raise SystemExit("local dashboard health check failed")
           PY
           kill "${dashboard_pid}"
 

@@ -45,6 +45,17 @@ flowchart TD
 
 详细设计见 [系统架构与技术方案](docs/architecture.md)。
 
+## 两种隔离运行模式
+
+| 模式 | 如何启用 | CSV 上传 | 数据位置 |
+| --- | --- | --- | --- |
+| 公开在线演示（默认） | 直接启动或部署 `main` | **关闭，界面中没有上传控件** | 只使用运行时生成的合成数据 |
+| 一键本地导入 | `start_local` 脚本或 Docker Compose | 仅本地开放 | CSV 与模型只在本机进程内存中 |
+
+本地导入采用双开关保护：只有 `SND_APP_MODE=local` 与
+`SND_LOCAL_IMPORT=1` 同时存在才会显示文件选择器。少一个、拼错或未设置都会
+回退为公开合成演示。请勿在任何公开服务器上开启这两个开关。
+
 ## 立即运行
 
 ### 方式一：GitHub Codespaces
@@ -56,25 +67,38 @@ bash scripts/run_demo.sh
 streamlit run streamlit_app.py
 ```
 
-### 方式二：本地 Python
+Codespaces 中默认仍是公开合成演示，不提供文件上传。
+
+### 方式二：一键本地导入（推荐）
+
+先克隆项目，然后运行对应入口；脚本会自动建立 `.venv`、安装缺少的依赖、
+打开 `http://127.0.0.1:8501`，不需要手工设置环境变量。
+
+macOS / Linux：
 
 ```bash
 git clone https://github.com/xie176320/our-snd-aeration-control.git
 cd our-snd-aeration-control
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-python -m pip install -e ".[web,plot,dev]"
-python -m unittest discover -s tests -v
-streamlit run streamlit_app.py
+bash scripts/start_local.sh
 ```
 
-网页默认打开 `http://localhost:8501`，包含新工况预测、曝气响应曲线、CSV 质量闸门、模型可信度和工程架构四个页面。
+Windows：克隆或下载 ZIP 后，双击 `scripts\start_local.cmd`。也可以在终端运行：
 
-### 方式三：Docker
+```bat
+scripts\start_local.cmd
+```
+
+左侧选择符合数据契约的 CSV。文件先通过字段、范围、40 条有效记录与 5 个
+日期/批次闸门；通过后才在本地建立模型并替换合成演示模型。
+
+### 方式三：Docker 一条命令本地导入
 
 ```bash
 docker compose up --build
 ```
+
+Compose 只绑定 `127.0.0.1:8501` 并显式启用本地导入。直接运行 Docker 镜像时
+仍默认是关闭上传的公开模式。
 
 完整部署说明见 [部署与运行手册](docs/deployment.md)。
 
@@ -114,7 +138,8 @@ CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
 - 合成指标只证明软件链路可复现，不代表真实现场性能。
 
 真实数据评价必须在授权的本地环境重新运行，并把结果保存在被 Git 忽略的
-`outputs/` 中。方法边界见 [同日三点校准](docs/calibrated_model.md)。
+`outputs/` 中；网页本地导入只在内存中处理 CSV，不生成或提交数据文件。
+方法边界见 [同日三点校准](docs/calibrated_model.md)。
 
 ## 标准数据契约
 
@@ -152,7 +177,7 @@ CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
 ├── configs/                 # 不含凭据的工况与三点校准示例
 ├── data/sample/             # 合成数据格式与生成说明（不存放记录）
 ├── docs/                    # 架构、模型、部署和作品集文档
-├── scripts/                 # 合成演示与私有数据离线入口
+├── scripts/                 # 一键本地网页、合成演示与私有数据离线入口
 ├── src/wastewater_snd/      # 数据、建模、决策、CLI 与网页代码
 ├── tests/                   # 泄漏、校准、质量和预测测试
 ├── Dockerfile

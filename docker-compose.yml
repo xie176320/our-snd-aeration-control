@@ -2,7 +2,10 @@ services:
   dashboard:
     build: .
     ports:
-      - "8501:8501"
+      - "127.0.0.1:8501:8501"
+    environment:
+      SND_APP_MODE: local
+      SND_LOCAL_IMPORT: "1"
     restart: unless-stopped
     healthcheck:
       test:
