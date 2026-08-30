@@ -1,0 +1,98 @@
+<view class="page home">
+  <view class="hero card">
+    <view class="hero__topline">
+      <view>
+        <text class="hero__eyebrow">OUR · SND DECISION SUPPORT</text>
+        <text class="hero__title">智水云控</text>
+      </view>
+      <status-pill text="{{status.text}}" tone="{{status.tone}}"></status-pill>
+    </view>
+    <text class="hero__subtitle">把实验数据变成可审计、可回看的现场建议</text>
+    <view class="hero__focus" wx:if="{{decision}}">
+      <view>
+        <text class="hero__focus-label">本次建议曝气量</text>
+        <view class="hero__focus-number">
+          <text>{{decision.recommendedAeration}}</text>
+          <text class="hero__focus-unit">L/min</text>
+        </view>
+      </view>
+      <view class="hero__grade">
+        <text class="hero__grade-label">证据等级</text>
+        <text class="hero__grade-value">{{decision.grade}}</text>
+      </view>
+    </view>
+    <button class="hero__button" bindtap="goDecision">查看完整决策依据</button>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">最新工况</text>
+    <text class="section-note">{{latest.displayTime || '暂无记录'}}</text>
+  </view>
+
+  <view class="metrics" wx:if="{{latest}}">
+    <metric-card
+      label="出水 TN"
+      value="{{latest.effluentTN}}"
+      unit="mg/L"
+      helper="目标 ≤ 15"
+      tone="{{latest.effluentTN > 15 ? 'warning' : 'brand'}}"
+    ></metric-card>
+    <metric-card
+      label="TN 去除率"
+      value="{{tnRemoval}}"
+      unit="%"
+      helper="按进出水计算"
+      tone="blue"
+    ></metric-card>
+    <metric-card
+      label="实时 OUR"
+      value="{{latest.ourRealtime}}"
+      unit="mgO₂/(L·h)"
+      helper="微生物即时活性"
+      tone="brand"
+    ></metric-card>
+    <metric-card
+      label="溶解氧 DO"
+      value="{{latest.dissolvedOxygen}}"
+      unit="mg/L"
+      helper="参考窗口 0.8–2.3"
+      tone="{{latest.dissolvedOxygen < 0.8 || latest.dissolvedOxygen > 2.3 ? 'warning' : 'brand'}}"
+    ></metric-card>
+  </view>
+
+  <view class="alert card alert--{{status.tone}}">
+    <view class="alert__icon">!</view>
+    <view class="alert__body">
+      <text class="alert__title">{{alertTitle}}</text>
+      <text class="alert__text">{{alertText}}</text>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">出水 TN 趋势</text>
+    <text class="section-note">近 {{trendSeries.length}} 次</text>
+  </view>
+  <view class="chart-card card">
+    <trend-chart series="{{trendSeries}}" target="{{15}}" unit="mg/L"></trend-chart>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">快捷操作</text>
+    <text class="section-note">本机共 {{recordCount}} 条记录</text>
+  </view>
+  <view class="quick-actions">
+    <view class="quick-action card" bindtap="goRecord">
+      <text class="quick-action__mark">＋</text>
+      <text class="quick-action__title">录入工况</text>
+      <text class="quick-action__desc">完整水质与 OUR 表单</text>
+    </view>
+    <view class="quick-action card" bindtap="goHistory">
+      <text class="quick-action__mark">↗</text>
+      <text class="quick-action__title">回看历史</text>
+      <text class="quick-action__desc">筛选、复算与导出 CSV</text>
+    </view>
+  </view>
+
+  <view class="about-link" bindtap="goAbout">项目架构、数据边界与免责声明 →</view>
+  <text class="disclaimer">科研与教学用途的决策支持原型，不替代在线仪表、安全联锁与专业人员判断。</text>
+</view>

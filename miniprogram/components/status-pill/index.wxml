@@ -1,0 +1,4 @@
+<view class="pill pill--{{tone}}">
+  <view class="pill__dot"></view>
+  <text>{{text}}</text>
+</view>

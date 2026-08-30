@@ -1,0 +1,8 @@
+<view class="metric metric--{{tone}}">
+  <text class="metric__label">{{label}}</text>
+  <view class="metric__number">
+    <text class="metric__value">{{value}}</text>
+    <text class="metric__unit" wx:if="{{unit}}">{{unit}}</text>
+  </view>
+  <text class="metric__helper" wx:if="{{helper}}">{{helper}}</text>
+</view>

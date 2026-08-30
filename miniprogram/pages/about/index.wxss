@@ -1,0 +1,129 @@
+.cover {
+  background: linear-gradient(145deg, #075e56 0%, #087f72 70%, #0fa28f 100%);
+  color: #fff;
+  padding: 38rpx 32rpx;
+}
+
+.cover__eyebrow {
+  color: rgba(255, 255, 255, 0.66);
+  display: block;
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+}
+
+.cover__title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 760;
+  line-height: 1.35;
+  margin-top: 16rpx;
+}
+
+.cover__text {
+  color: rgba(255, 255, 255, 0.75);
+  display: block;
+  font-size: 23rpx;
+  line-height: 1.65;
+  margin-top: 16rpx;
+}
+
+.flow {
+  padding: 12rpx 28rpx;
+}
+
+.flow__item {
+  align-items: center;
+  display: flex;
+  min-height: 86rpx;
+  position: relative;
+}
+
+.flow__number {
+  align-items: center;
+  background: #dff2ee;
+  border-radius: 50%;
+  color: #087f72;
+  display: flex;
+  font-size: 21rpx;
+  font-weight: 750;
+  height: 48rpx;
+  justify-content: center;
+  width: 48rpx;
+}
+
+.flow__label {
+  font-size: 25rpx;
+  font-weight: 650;
+  margin-left: 18rpx;
+}
+
+.flow__arrow {
+  bottom: -10rpx;
+  color: #b7c5c1;
+  font-size: 26rpx;
+  left: 17rpx;
+  position: absolute;
+}
+
+.design {
+  padding: 4rpx 26rpx;
+}
+
+.design__item {
+  align-items: flex-start;
+  border-bottom: 1rpx solid #edf1f0;
+  display: flex;
+  gap: 18rpx;
+  padding: 26rpx 0;
+}
+
+.design__item:last-child {
+  border-bottom: 0;
+}
+
+.design__tag {
+  background: #eef6f4;
+  border-radius: 10rpx;
+  color: #087f72;
+  flex: 0 0 94rpx;
+  font-size: 16rpx;
+  font-weight: 800;
+  letter-spacing: 1rpx;
+  padding: 9rpx 0;
+  text-align: center;
+}
+
+.design__title {
+  display: block;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.design__text {
+  color: #687772;
+  display: block;
+  font-size: 21rpx;
+  line-height: 1.6;
+  margin-top: 8rpx;
+}
+
+.boundary {
+  padding: 16rpx 28rpx;
+}
+
+.boundary text {
+  border-bottom: 1rpx solid #edf1f0;
+  color: #53615d;
+  display: block;
+  font-size: 22rpx;
+  line-height: 1.65;
+  padding: 18rpx 0;
+}
+
+.boundary text:last-child {
+  border-bottom: 0;
+}
+
+.repo-button {
+  margin-top: 28rpx;
+}

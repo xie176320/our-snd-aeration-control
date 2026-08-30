@@ -1,0 +1,22 @@
+<view class="chart" wx:if="{{bars.length}}">
+  <view class="chart__plot">
+    <view
+      class="chart__column"
+      wx:for="{{bars}}"
+      wx:key="label"
+      aria-label="{{item.label}}：{{item.displayValue}}{{unit}}"
+    >
+      <text class="chart__value">{{item.displayValue}}</text>
+      <view
+        class="chart__bar {{item.overTarget ? 'chart__bar--over' : ''}}"
+        style="height: {{item.height}}%;"
+      ></view>
+      <text class="chart__label">{{item.label}}</text>
+    </view>
+  </view>
+  <view class="chart__legend" wx:if="{{target}}">
+    <view class="chart__legend-dot"></view>
+    <text>目标上限 {{target}} {{unit}}</text>
+  </view>
+</view>
+<view class="chart__empty" wx:else>暂无可展示数据</view>

@@ -25,6 +25,15 @@ _A reproducible research and decision-support toolkit for OUR-informed SND model
 
 <p align="center"><sub>公开部署使用运行时合成数据，线上文件上传入口已关闭。点击截图进入在线演示。</sub></p>
 
+
+## 移动端产品：WaterPilot 微信小程序
+
+**WaterPilot 智水云控**把本项目的 OUR-SND 决策链路延伸到微信端，支持现场工况录入、量纲校验、A/B/C 证据分级、90% 保守 TN 上界、支持域解释、历史复算和 CSV 导出。默认使用虚构数据与本地透明引擎，无需服务器即可完整演示；通过统一适配层可替换为授权环境中的 Python 模型 API。
+
+[![WaterPilot 首页与曝气决策页](docs/assets/waterpilot-preview.svg)](miniprogram/README.md)
+
+**[查看小程序源码、运行方式与校招简历写法](miniprogram/README.md)**
+
 ## 为什么做这个项目
 
 传统 DO 或定时曝气很难同时表达微生物活性、脱氮状态和运行风险。实验数据又常具有“同一天多组重复、跨日期差异大、字段来源分散”的特点，随机记录拆分会明显高估模型泛化能力。
@@ -203,6 +212,7 @@ CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
 .
 ├── .github/                 # CI、Issue 和 PR 模板、依赖更新
 ├── .streamlit/              # 网页主题与安全配置
+├── miniprogram/              # WaterPilot 微信小程序、离线引擎与单元测试
 ├── configs/                 # 不含凭据的工况与三点校准示例
 ├── data/sample/             # 合成数据格式与生成说明（不存放记录）
 ├── docs/                    # 架构、模型、部署和作品集文档
@@ -217,6 +227,7 @@ CI 会在每次 Pull Request 中重新生成虚构数据，并验证：
 ## 文档
 
 - [系统架构与技术方案](docs/architecture.md)
+- [WaterPilot 微信小程序](miniprogram/README.md)
 - [数据字典](docs/data_dictionary.md)
 - [详细运行手册](docs/running.md)
 - [部署与运行手册](docs/deployment.md)
