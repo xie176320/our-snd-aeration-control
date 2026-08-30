@@ -1,0 +1,68 @@
+<view class="page about-page">
+  <view class="cover card">
+    <text class="cover__eyebrow">WATERPILOT · v0.1.0</text>
+    <text class="cover__title">从科研算法到移动端决策产品</text>
+    <text class="cover__text">面向污水生化处理实验与现场巡检的 OUR-SND 决策支持微信小程序。</text>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">产品闭环</text>
+    <text class="section-note">5 个可审计环节</text>
+  </view>
+  <view class="flow card">
+    <view class="flow__item" wx:for="{{flowSteps}}" wx:key="*this">
+      <text class="flow__number">{{index + 1}}</text>
+      <text class="flow__label">{{item}}</text>
+      <text class="flow__arrow" wx:if="{{index < 4}}">↓</text>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">工程设计</text>
+    <text class="section-note">可替换、可验证</text>
+  </view>
+  <view class="design card">
+    <view class="design__item">
+      <text class="design__tag">OFFLINE</text>
+      <view>
+        <text class="design__title">离线优先</text>
+        <text class="design__text">演示数据与手工记录只保存在本机，不依赖登录和服务器。</text>
+      </view>
+    </view>
+    <view class="design__item">
+      <text class="design__tag">ENGINE</text>
+      <view>
+        <text class="design__title">领域逻辑解耦</text>
+        <text class="design__text">纯 JavaScript 决策引擎可单元测试，页面不直接承载算法。</text>
+      </view>
+    </view>
+    <view class="design__item">
+      <text class="design__tag">API</text>
+      <view>
+        <text class="design__title">模型接口可替换</text>
+        <text class="design__text">关闭 demoMode 后，可通过统一适配层接入 Python 模型服务。</text>
+      </view>
+    </view>
+    <view class="design__item">
+      <text class="design__tag">GUARD</text>
+      <view>
+        <text class="design__title">安全门控</text>
+        <text class="design__text">同时检查 TN 保守上界、DO 窗口、历史支持域和混合下限。</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">数据边界</text>
+    <text class="section-note">隐私与可信性</text>
+  </view>
+  <view class="boundary card">
+    <text>公开仓库只提供代码、虚构演示数据与接口契约。</text>
+    <text>本地透明引擎证明产品链路可运行，不代表真实现场精度。</text>
+    <text>真实模型应在授权环境中重训、日期隔离验证并经专业人员审核。</text>
+    <text>小程序不直接控制设备，不替代在线仪表、安全联锁与应急预案。</text>
+  </view>
+
+  <button class="secondary-button repo-button" bindtap="copyRepository">复制 GitHub 仓库链接</button>
+  <text class="disclaimer">MIT License · Designed for research, education and portfolio demonstration.</text>
+</view>

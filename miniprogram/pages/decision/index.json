@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "曝气决策",
+  "usingComponents": {
+    "metric-card": "/components/metric-card/index",
+    "status-pill": "/components/status-pill/index",
+    "trend-chart": "/components/trend-chart/index"
+  }
+}

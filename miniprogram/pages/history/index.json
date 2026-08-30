@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "历史记录",
+  "usingComponents": {
+    "status-pill": "/components/status-pill/index"
+  }
+}

@@ -1,0 +1,151 @@
+<view class="page record-page">
+  <view class="intro card">
+    <text class="intro__eyebrow">FIELD DATA</text>
+    <text class="intro__title">一次录入，自动形成决策上下文</text>
+    <text class="intro__text">默认仅保存在微信本机缓存；演示模式不会上传实验数据。</text>
+  </view>
+
+  <view class="error-box" wx:if="{{errors.length}}">
+    <text class="error-box__title">请核对以下内容</text>
+    <text class="error-box__item" wx:for="{{errors}}" wx:key="*this">• {{item}}</text>
+  </view>
+
+  <view class="form-section card">
+    <view class="form-section__header">
+      <text class="form-section__number">01</text>
+      <view>
+        <text class="form-section__title">采样信息</text>
+        <text class="form-section__desc">建立可追溯时间戳</text>
+      </view>
+    </view>
+    <view class="picker-row">
+      <view class="field picker-field">
+        <text class="field__label">日期</text>
+        <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+          <view class="field__picker">{{form.date}}</view>
+        </picker>
+      </view>
+      <view class="field picker-field">
+        <text class="field__label">时间</text>
+        <picker mode="time" value="{{form.time}}" bindchange="onTimeChange">
+          <view class="field__picker">{{form.time}}</view>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section card">
+    <view class="form-section__header">
+      <text class="form-section__number">02</text>
+      <view>
+        <text class="form-section__title">水质与运行条件</text>
+        <text class="form-section__desc">全部使用数值原始口径</text>
+      </view>
+    </view>
+    <view class="field-grid">
+      <label class="field">
+        <text class="field__label">进水 TN</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.influentTN}}" data-field="influentTN" bindinput="onFieldInput" placeholder="如 31.2" />
+          <text class="field__unit">mg/L</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">出水 TN</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.effluentTN}}" data-field="effluentTN" bindinput="onFieldInput" placeholder="如 12.0" />
+          <text class="field__unit">mg/L</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">进水 COD</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.cod}}" data-field="cod" bindinput="onFieldInput" placeholder="如 208" />
+          <text class="field__unit">mg/L</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">温度</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.temperature}}" data-field="temperature" bindinput="onFieldInput" />
+          <text class="field__unit">℃</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">MLSS</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.mlss}}" data-field="mlss" bindinput="onFieldInput" placeholder="如 5.2" />
+          <text class="field__unit">g/L</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">当前曝气量</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.currentAeration}}" data-field="currentAeration" bindinput="onFieldInput" placeholder="如 8.2" />
+          <text class="field__unit">L/min</text>
+        </view>
+      </label>
+      <label class="field field--full">
+        <text class="field__label">溶解氧 DO</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.dissolvedOxygen}}" data-field="dissolvedOxygen" bindinput="onFieldInput" placeholder="如 1.48" />
+          <text class="field__unit">mg/L</text>
+        </view>
+      </label>
+    </view>
+  </view>
+
+  <view class="form-section card">
+    <view class="form-section__header">
+      <text class="form-section__number">03</text>
+      <view>
+        <text class="form-section__title">微生物活性 OUR</text>
+        <text class="form-section__desc">最大活性用于能力，实时活性用于状态</text>
+      </view>
+    </view>
+    <view class="field-grid">
+      <label class="field">
+        <text class="field__label">异养菌最大 OUR</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.ourHetMax}}" data-field="ourHetMax" bindinput="onFieldInput" placeholder="如 13.1" />
+          <text class="field__unit">mgO₂/(L·h)</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">实时 OUR</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.ourRealtime}}" data-field="ourRealtime" bindinput="onFieldInput" placeholder="如 4.2" />
+          <text class="field__unit">mgO₂/(L·h)</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">AOB 最大 OUR</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.ourAobMax}}" data-field="ourAobMax" bindinput="onFieldInput" placeholder="如 4.2" />
+          <text class="field__unit">mgO₂/(L·h)</text>
+        </view>
+      </label>
+      <label class="field">
+        <text class="field__label">NOB 最大 OUR</text>
+        <view class="field__input-wrap">
+          <input class="field__input" type="digit" value="{{form.ourNobMax}}" data-field="ourNobMax" bindinput="onFieldInput" placeholder="如 2.9" />
+          <text class="field__unit">mgO₂/(L·h)</text>
+        </view>
+      </label>
+    </view>
+    <label class="field note-field">
+      <text class="field__label">现场备注（可选）</text>
+      <textarea class="field__textarea" value="{{form.note}}" data-field="note" bindinput="onFieldInput" maxlength="200" placeholder="如进水颜色异常、泡沫增加、设备检修等"></textarea>
+    </label>
+  </view>
+
+  <view class="button-stack">
+    <button class="primary-button" loading="{{saving}}" bindtap="saveAndDecide">保存并生成决策</button>
+    <view class="button-row">
+      <button class="secondary-button" bindtap="saveOnly">仅保存</button>
+      <button class="ghost-button" bindtap="resetForm">清空</button>
+    </view>
+  </view>
+
+  <text class="disclaimer">请保持量纲一致；异常值会被本地校验拦截，但仍需人工核对采样与检测过程。</text>
+</view>

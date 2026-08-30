@@ -1,0 +1,38 @@
+.pill {
+  align-items: center;
+  background: #eef2f1;
+  border-radius: 999rpx;
+  color: #5f6c68;
+  display: inline-flex;
+  font-size: 22rpx;
+  font-weight: 600;
+  gap: 10rpx;
+  padding: 10rpx 18rpx;
+}
+
+.pill__dot {
+  background: currentColor;
+  border-radius: 50%;
+  height: 12rpx;
+  width: 12rpx;
+}
+
+.pill--safe {
+  background: #dff2ee;
+  color: #087f72;
+}
+
+.pill--warning {
+  background: #fff1dd;
+  color: #a45c0d;
+}
+
+.pill--danger {
+  background: #fde8eb;
+  color: #b73b48;
+}
+
+.pill--neutral {
+  background: #eef2f1;
+  color: #5f6c68;
+}

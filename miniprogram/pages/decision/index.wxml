@@ -1,0 +1,128 @@
+<view class="page decision-page">
+  <view class="empty card" wx:if="{{!record}}">
+    <text class="empty__mark">≈</text>
+    <text class="empty__title">还没有可计算的工况</text>
+    <text class="empty__text">先录入一组水质、运行条件与 OUR 数据。</text>
+    <button class="primary-button" bindtap="goRecord">去录入</button>
+  </view>
+
+  <block wx:else>
+    <view class="context card">
+      <view class="context__header">
+        <view>
+          <text class="context__eyebrow">ACTIVE CONDITION</text>
+          <text class="context__title">{{record.displayTime}}</text>
+        </view>
+        <text class="context__change" bindtap="chooseRecord">切换记录</text>
+      </view>
+      <view class="context__metrics">
+        <view class="context__metric">
+          <text>进水 TN</text>
+          <text>{{record.influentTN}} mg/L</text>
+        </view>
+        <view class="context__metric">
+          <text>出水 TN</text>
+          <text>{{record.effluentTN}} mg/L</text>
+        </view>
+        <view class="context__metric">
+          <text>当前曝气</text>
+          <text>{{record.currentAeration}} L/min</text>
+        </view>
+        <view class="context__metric">
+          <text>实时 OUR</text>
+          <text>{{record.ourRealtime}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="options card">
+      <view class="option-field">
+        <text class="option-field__label">出水 TN 目标</text>
+        <view class="option-field__input">
+          <input type="digit" value="{{targetTN}}" data-field="targetTN" bindinput="onOptionInput" />
+          <text>mg/L</text>
+        </view>
+      </view>
+      <view class="option-field">
+        <text class="option-field__label">混合曝气安全下限</text>
+        <view class="option-field__input">
+          <input type="digit" value="{{minimumSafeAeration}}" data-field="minimumSafeAeration" bindinput="onOptionInput" />
+          <text>L/min</text>
+        </view>
+      </view>
+      <button class="primary-button" loading="{{loading}}" bindtap="runDecision">重新计算</button>
+    </view>
+
+    <view class="error-card" wx:if="{{error}}">{{error}}</view>
+
+    <block wx:if="{{decision}}">
+      <view class="result result--{{gradeMeta.tone}} card">
+        <view class="result__top">
+          <status-pill text="{{gradeMeta.title}}" tone="{{gradeMeta.tone}}"></status-pill>
+          <text class="result__source">{{sourceLabel}}</text>
+        </view>
+        <view class="result__main">
+          <view>
+            <text class="result__label">建议曝气量</text>
+            <view class="result__number">
+              <text>{{decision.recommendedAeration}}</text>
+              <text>L/min</text>
+            </view>
+            <text class="result__adjustment">{{decision.adjustmentText}}</text>
+          </view>
+          <view class="result__grade">
+            <text>{{decision.grade}}</text>
+            <text>证据等级</text>
+          </view>
+        </view>
+        <text class="result__summary">{{gradeMeta.summary}}</text>
+      </view>
+
+      <view class="section-heading">
+        <text class="section-title">安全边界</text>
+        <text class="section-note">目标 ≤ {{decision.targetTN}} mg/L</text>
+      </view>
+      <view class="metrics">
+        <metric-card label="预测出水 TN" value="{{decision.predictedEffluentTN}}" unit="mg/L" helper="建议点的中心估计"></metric-card>
+        <metric-card label="90% 保守上界" value="{{decision.conservativeUpperTN}}" unit="mg/L" helper="用于达标门控" tone="{{decision.conservativeUpperTN > decision.targetTN ? 'danger' : 'brand'}}"></metric-card>
+        <metric-card label="估算 DO" value="{{decision.estimatedDO}}" unit="mg/L" helper="参考窗口 0.8–2.3" tone="blue"></metric-card>
+        <metric-card label="SND 潜力" value="{{decision.sndPotential}}" unit="/100" helper="非实测 SND 率" tone="warning"></metric-card>
+      </view>
+
+      <view class="section-heading">
+        <text class="section-title">候选响应曲线</text>
+        <text class="section-note">横轴为曝气量 L/min</text>
+      </view>
+      <view class="chart-card card">
+        <trend-chart series="{{decision.curve}}" target="{{decision.targetTN}}" unit="mg/L"></trend-chart>
+        <text class="chart-card__note">柱高表示 90% 保守 TN 上界；橙色表示超过目标。</text>
+      </view>
+
+      <view class="section-heading">
+        <text class="section-title">为什么这样建议</text>
+        <text class="section-note">支持域 {{decision.supportPercent}}%</text>
+      </view>
+      <view class="evidence card">
+        <view class="evidence__item" wx:for="{{decision.evidence}}" wx:key="*this">
+          <text class="evidence__index">{{index + 1}}</text>
+          <text>{{item}}</text>
+        </view>
+      </view>
+
+      <view class="section-heading">
+        <text class="section-title">执行清单</text>
+        <text class="section-note">人工确认后执行</text>
+      </view>
+      <view class="actions card">
+        <view class="actions__item" wx:for="{{decision.actions}}" wx:key="*this">
+          <view class="actions__check">✓</view>
+          <text>{{item}}</text>
+        </view>
+      </view>
+
+      <button class="secondary-button copy-button" bindtap="copyReport">复制决策摘要</button>
+    </block>
+
+    <text class="disclaimer">本地透明引擎只用于产品演示；接入生产前必须以授权数据重训、验证并部署后端模型服务。</text>
+  </block>
+</view>

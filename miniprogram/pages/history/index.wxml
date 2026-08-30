@@ -1,0 +1,64 @@
+<view class="page history-page">
+  <view class="summary card">
+    <view>
+      <text class="summary__eyebrow">LOCAL DATASET</text>
+      <text class="summary__number">{{allRecords.length}}</text>
+      <text class="summary__unit">条本机记录</text>
+    </view>
+    <view class="summary__actions">
+      <text bindtap="copyCsv">复制 CSV</text>
+      <text bindtap="resetDemo">恢复演示</text>
+    </view>
+  </view>
+
+  <view class="filters">
+    <view
+      class="filter {{activeFilter === item.key ? 'filter--active' : ''}}"
+      wx:for="{{filters}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="setFilter"
+    >{{item.label}}</view>
+  </view>
+
+  <view class="empty card" wx:if="{{!records.length}}">
+    <text class="empty__title">当前筛选下没有记录</text>
+    <text class="empty__text">录入一组新工况，或切换筛选条件。</text>
+    <button class="primary-button" bindtap="goRecord">去录入</button>
+  </view>
+
+  <view class="record card" wx:for="{{records}}" wx:key="id">
+    <view class="record__header">
+      <view>
+        <text class="record__time">{{item.displayTime}}</text>
+        <text class="record__source">{{item.source === 'demo' ? '虚构演示数据' : '手工录入'}}</text>
+      </view>
+      <status-pill text="{{item.statusText}}" tone="{{item.statusTone}}"></status-pill>
+    </view>
+    <view class="record__metrics">
+      <view>
+        <text>出水 TN</text>
+        <text>{{item.effluentTN}} <text class="record__unit">mg/L</text></text>
+      </view>
+      <view>
+        <text>TN 去除率</text>
+        <text>{{item.removalRate}} <text class="record__unit">%</text></text>
+      </view>
+      <view>
+        <text>曝气量</text>
+        <text>{{item.currentAeration}} <text class="record__unit">L/min</text></text>
+      </view>
+      <view>
+        <text>实时 OUR</text>
+        <text>{{item.ourRealtime}}</text>
+      </view>
+    </view>
+    <text class="record__note" wx:if="{{item.note}}">备注：{{item.note}}</text>
+    <view class="record__footer">
+      <button class="record__use" data-id="{{item.id}}" bindtap="useRecord">用于决策</button>
+      <button class="record__delete" data-id="{{item.id}}" bindtap="deleteRecord">删除</button>
+    </view>
+  </view>
+
+  <text class="disclaimer">“已达标”只按当前列表目标 15 mg/L 判断；正式评价应同时核对独立实测结果与适用标准。</text>
+</view>

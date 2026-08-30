@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "WaterPilot",
+  "usingComponents": {
+    "metric-card": "/components/metric-card/index",
+    "status-pill": "/components/status-pill/index",
+    "trend-chart": "/components/trend-chart/index"
+  }
+}

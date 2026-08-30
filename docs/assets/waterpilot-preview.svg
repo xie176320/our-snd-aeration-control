@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">WaterPilot 智水云控微信小程序预览</title>
+  <desc id="desc">首页驾驶舱和曝气决策页面的并排界面预览</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9f2f0"/>
+      <stop offset="1" stop-color="#dce8e5"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#075e56"/>
+      <stop offset="0.65" stop-color="#087f72"/>
+      <stop offset="1" stop-color="#0e9b89"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3bb5a5"/>
+      <stop offset="1" stop-color="#087f72"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#163e37" flood-opacity="0.2"/>
+    </filter>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; fill: #14201d; }
+      .muted { fill: #687772; }
+      .white { fill: #ffffff; }
+      .soft-white { fill: #ffffff; opacity: .7; }
+      .brand { fill: #087f72; }
+      .tiny { font-size: 11px; }
+      .small { font-size: 13px; }
+      .body { font-size: 15px; }
+      .label { font-size: 12px; fill: #687772; }
+      .strong { font-weight: 700; }
+      .heavy { font-weight: 800; }
+      .card { fill: #ffffff; stroke: #e4ece9; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="900" fill="url(#background)"/>
+  <circle cx="120" cy="160" r="190" fill="#32b39f" opacity=".08"/>
+  <circle cx="1090" cy="760" r="250" fill="#075e56" opacity=".07"/>
+  <text x="90" y="55" class="brand tiny heavy" letter-spacing="4">WECHAT MINI PROGRAM · PORTFOLIO PREVIEW</text>
+  <text x="90" y="92" font-size="30" class="heavy">WaterPilot</text>
+  <text x="335" y="91" class="muted body">WeChat Mini Program · OUR-informed SND decision support · safety guardrails</text>
+
+  <!-- Home phone -->
+  <g transform="translate(125 125)" filter="url(#shadow)">
+    <rect x="0" y="0" width="410" height="720" rx="42" fill="#17231f"/>
+    <rect x="8" y="8" width="394" height="704" rx="35" fill="#f4f8f7"/>
+    <rect x="135" y="8" width="140" height="25" rx="0 0 15 15" fill="#17231f"/>
+    <text x="205" y="53" text-anchor="middle" class="small strong">WaterPilot</text>
+
+    <rect x="26" y="70" width="358" height="250" rx="20" fill="url(#hero)"/>
+    <text x="48" y="99" class="soft-white tiny" letter-spacing="2">OUR · SND DECISION SUPPORT</text>
+    <text x="48" y="137" font-size="28" class="white heavy">WaterPilot</text>
+    <rect x="292" y="91" width="70" height="28" rx="14" fill="#ffffff" opacity=".14"/>
+    <circle cx="307" cy="105" r="4" fill="#ffffff"/>
+    <text x="318" y="109" class="white tiny">RECHECK</text>
+    <text x="48" y="161" class="soft-white small">Turn field data into auditable operating guidance</text>
+    <rect x="46" y="179" width="318" height="82" rx="14" fill="#ffffff" opacity=".1" stroke="#ffffff" stroke-opacity=".2"/>
+    <text x="62" y="201" class="soft-white tiny">RECOMMENDED AERATION</text>
+    <text x="62" y="242" font-size="38" class="white heavy">7.4</text>
+    <text x="128" y="242" class="soft-white small">L/min</text>
+    <text x="330" y="209" text-anchor="end" class="soft-white tiny">EVIDENCE</text>
+    <text x="330" y="245" text-anchor="end" font-size="32" class="white heavy">B</text>
+    <rect x="46" y="274" width="318" height="32" rx="9" fill="#ffffff"/>
+    <text x="205" y="295" text-anchor="middle" class="brand small strong">VIEW DECISION EVIDENCE</text>
+
+    <text x="28" y="354" class="body strong">Latest condition</text>
+    <text x="382" y="354" text-anchor="end" class="muted tiny">08-30 09:30</text>
+    <g transform="translate(26 370)">
+      <rect width="173" height="90" rx="15" class="card"/>
+      <text x="16" y="25" class="label">Effluent TN</text>
+      <text x="16" y="63" font-size="27" class="heavy">12.0</text><text x="82" y="63" class="muted tiny">mg/L</text>
+      <rect x="16" y="0" width="34" height="5" rx="3" fill="#087f72"/>
+    </g>
+    <g transform="translate(211 370)">
+      <rect width="173" height="90" rx="15" class="card"/>
+      <text x="16" y="25" class="label">TN removal</text>
+      <text x="16" y="63" font-size="27" class="heavy">61.5</text><text x="86" y="63" class="muted tiny">%</text>
+      <rect x="16" y="0" width="34" height="5" rx="3" fill="#2472a4"/>
+    </g>
+    <g transform="translate(26 472)">
+      <rect width="173" height="90" rx="15" class="card"/>
+      <text x="16" y="25" class="label">Realtime OUR</text>
+      <text x="16" y="63" font-size="27" class="heavy">4.2</text><text x="58" y="63" class="muted tiny">mgO₂/(L·h)</text>
+      <rect x="16" y="0" width="34" height="5" rx="3" fill="#087f72"/>
+    </g>
+    <g transform="translate(211 472)">
+      <rect width="173" height="90" rx="15" class="card"/>
+      <text x="16" y="25" class="label">Dissolved oxygen</text>
+      <text x="16" y="63" font-size="27" class="heavy">1.48</text><text x="74" y="63" class="muted tiny">mg/L</text>
+      <rect x="16" y="0" width="34" height="5" rx="3" fill="#087f72"/>
+    </g>
+    <rect x="26" y="574" width="358" height="72" rx="15" class="card"/>
+    <rect x="42" y="591" width="38" height="38" rx="10" fill="#fff1dd"/>
+    <text x="61" y="617" text-anchor="middle" fill="#bc6b12" font-size="20" class="heavy">!</text>
+    <text x="93" y="600" class="small strong">Guarded trial step</text>
+    <text x="93" y="620" class="muted tiny">Adjust by only 0.8 L/min; recheck after one HRT.</text>
+
+    <rect x="8" y="660" width="394" height="52" rx="0 0 34 34" fill="#ffffff"/>
+    <text x="58" y="691" class="brand tiny strong">●  Home</text>
+    <text x="150" y="691" class="muted tiny">●  Record</text>
+    <text x="245" y="691" class="muted tiny">●  Decide</text>
+    <text x="338" y="691" class="muted tiny">●  History</text>
+  </g>
+
+  <!-- Decision phone -->
+  <g transform="translate(665 125)" filter="url(#shadow)">
+    <rect x="0" y="0" width="410" height="720" rx="42" fill="#17231f"/>
+    <rect x="8" y="8" width="394" height="704" rx="35" fill="#f4f8f7"/>
+    <rect x="135" y="8" width="140" height="25" rx="0 0 15 15" fill="#17231f"/>
+    <text x="205" y="53" text-anchor="middle" class="small strong">Aeration Decision</text>
+
+    <rect x="26" y="70" width="358" height="128" rx="17" class="card"/>
+    <text x="44" y="95" class="brand tiny heavy" letter-spacing="2">ACTIVE CONDITION</text>
+    <text x="44" y="119" class="body strong">2026-08-30 09:30</text>
+    <text x="365" y="105" text-anchor="end" class="brand tiny">CHANGE</text>
+    <rect x="42" y="134" width="326" height="48" rx="10" fill="#f5f8f7"/>
+    <text x="55" y="151" class="muted tiny">Influent TN</text><text x="55" y="170" class="small strong">31.2 mg/L</text>
+    <text x="137" y="151" class="muted tiny">Effluent TN</text><text x="137" y="170" class="small strong">12.0 mg/L</text>
+    <text x="222" y="151" class="muted tiny">Aeration</text><text x="222" y="170" class="small strong">8.2 L/min</text>
+    <text x="305" y="151" class="muted tiny">RT OUR</text><text x="305" y="170" class="small strong">4.2</text>
+
+    <rect x="26" y="210" width="358" height="168" rx="17" class="card"/>
+    <rect x="26" y="210" width="358" height="7" rx="4" fill="#bc6b12"/>
+    <rect x="44" y="232" width="88" height="27" rx="14" fill="#fff1dd"/>
+    <circle cx="58" cy="245" r="4" fill="#bc6b12"/>
+    <text x="69" y="249" fill="#9e570a" class="tiny strong">GUARDED TRIAL</text>
+    <text x="365" y="248" text-anchor="end" class="muted tiny">LOCAL ENGINE</text>
+    <text x="44" y="282" class="label">Recommended aeration</text>
+    <text x="44" y="327" font-size="42" class="heavy">7.4</text><text x="116" y="327" class="muted small">L/min</text>
+    <text x="44" y="349" class="brand tiny">DOWN 0.8</text>
+    <rect x="294" y="278" width="70" height="70" rx="14" fill="#fff6e8"/>
+    <text x="329" y="316" text-anchor="middle" font-size="31" fill="#bc6b12" class="heavy">B</text>
+    <text x="329" y="337" text-anchor="middle" class="muted tiny">EVIDENCE</text>
+
+    <text x="28" y="412" class="body strong">Safety envelope</text>
+    <text x="382" y="412" text-anchor="end" class="muted tiny">TARGET ≤ 15 mg/L</text>
+    <g transform="translate(26 428)">
+      <rect width="173" height="82" rx="14" class="card"/>
+      <text x="15" y="24" class="label">Predicted TN</text>
+      <text x="15" y="59" font-size="25" class="heavy">11.9</text><text x="76" y="59" class="muted tiny">mg/L</text>
+    </g>
+    <g transform="translate(211 428)">
+      <rect width="173" height="82" rx="14" class="card"/>
+      <text x="15" y="24" class="label">90% upper bound</text>
+      <text x="15" y="59" font-size="25" class="heavy">13.2</text><text x="76" y="59" class="muted tiny">mg/L</text>
+    </g>
+    <g transform="translate(26 522)">
+      <rect width="173" height="82" rx="14" class="card"/>
+      <text x="15" y="24" class="label">Estimated DO</text>
+      <text x="15" y="59" font-size="25" class="heavy">1.34</text><text x="76" y="59" class="muted tiny">mg/L</text>
+    </g>
+    <g transform="translate(211 522)">
+      <rect width="173" height="82" rx="14" class="card"/>
+      <text x="15" y="24" class="label">SND potential</text>
+      <text x="15" y="59" font-size="25" class="heavy">91</text><text x="49" y="59" class="muted tiny">/100</text>
+    </g>
+    <rect x="26" y="616" width="358" height="32" rx="10" fill="#dff2ee"/>
+    <text x="44" y="637" class="brand tiny strong">SUPPORT 100% · P90 PASSED · STEP LIMITED</text>
+
+    <rect x="8" y="660" width="394" height="52" rx="0 0 34 34" fill="#ffffff"/>
+    <text x="58" y="691" class="muted tiny">●  Home</text>
+    <text x="150" y="691" class="muted tiny">●  Record</text>
+    <text x="245" y="691" class="brand tiny strong">●  Decide</text>
+    <text x="338" y="691" class="muted tiny">●  History</text>
+  </g>
+</svg>
